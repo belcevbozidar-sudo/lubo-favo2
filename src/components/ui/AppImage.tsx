@@ -78,6 +78,8 @@ function AppImage({
                         onClick={onClick}
                         style={imgStyle}
                         {...props}
+                        loading={props.loading ?? (priority ? 'eager' : 'lazy')}
+                        decoding={props.decoding ?? 'async'}
                     />
                 </div>
             );
@@ -93,6 +95,8 @@ function AppImage({
                 onClick={onClick}
                 style={imgStyle}
                 {...props}
+                loading={props.loading ?? (priority ? 'eager' : 'lazy')}
+                decoding={props.decoding ?? 'async'}
             />
         );
     }

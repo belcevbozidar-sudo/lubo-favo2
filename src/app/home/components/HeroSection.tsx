@@ -1,140 +1,214 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import AppImage from '@/components/ui/AppImage';
 
 interface HeroSectionProps {
   onOpenCart: () => void;
 }
 
-const photos = [
-{
-  src: "https://images.unsplash.com/photo-1562259949-e8e7689d7828",
-  alt: 'Woodworking tools and timber in a production workshop',
-  rotate: '-8deg', top: '8%', left: '2%', width: 160, zIndex: 2, scale: 1
-},
-{
-  src: "https://images.unsplash.com/photo-1601058268499-e52658b8bb88",
-  alt: 'Foldable wooden table in a warm interior setting',
-  rotate: '5deg', top: '5%', left: '18%', width: 140, zIndex: 1, scale: 0.95
-},
-{
-  src: "https://images.unsplash.com/photo-1503387762-592deb58ef4e",
-  alt: 'Precision wood production details in an industrial space',
-  rotate: '-3deg', top: '32%', right: '6%', width: 200, zIndex: 3, scale: 1.05,
-  hero: true
-},
-{
-  src: "https://images.unsplash.com/photo-1503387762-592deb58ef4e",
-  alt: 'Sheets of plywood stacked for production and model making',
-  rotate: '7deg', top: '10%', right: '16%', width: 145, zIndex: 2, scale: 1
-},
-{
-  src: "https://images.unsplash.com/photo-1519710164239-da123dc03ef4",
-  alt: 'Wooden decor and finished home products on a table',
-  rotate: '-6deg', top: '6%', right: '2%', width: 155, zIndex: 1, scale: 0.95
-},
-{
-  src: "https://images.unsplash.com/photo-1562259949-e8e7689d7828",
-  alt: 'Paint brushes and rollers arranged for home renovation',
-  rotate: '4deg', top: '52%', left: '1%', width: 130, zIndex: 2, scale: 1
-},
-{
-  src: "https://images.unsplash.com/photo-1562259929-b4e1fd3aef09",
-  alt: 'Laser cut wood details and craft materials',
-  rotate: '-5deg', top: '55%', right: '1%', width: 135, zIndex: 2, scale: 1
-}];
+const img = (id: string, width: number) =>
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${width}&q=68`;
 
+const desktopPhotos = [
+  {
+    src: img('photo-1562259949-e8e7689d7828', 360),
+    alt: 'Paint roller and renovation tools',
+    rotate: '-7deg',
+    top: '10%',
+    left: '3%',
+    width: 180,
+    height: 140,
+    zIndex: 2,
+  },
+  {
+    src: img('photo-1601058268499-e52658b8bb88', 380),
+    alt: 'Foldable wooden table in a warm interior setting',
+    rotate: '5deg',
+    top: '34%',
+    left: '7%',
+    width: 178,
+    height: 230,
+    zIndex: 3,
+  },
+  {
+    src: img('photo-1519710164239-da123dc03ef4', 340),
+    alt: 'Finished wooden home products',
+    rotate: '-5deg',
+    bottom: '7%',
+    left: '4%',
+    width: 158,
+    height: 190,
+    zIndex: 2,
+  },
+  {
+    src: img('photo-1562259929-b4e1fd3aef09', 360),
+    alt: 'Laser cut wood details and craft materials',
+    rotate: '6deg',
+    top: '11%',
+    right: '4%',
+    width: 178,
+    height: 145,
+    zIndex: 2,
+  },
+  {
+    src: img('photo-1503387762-592deb58ef4e', 460),
+    alt: 'Precision wood production details in an industrial space',
+    rotate: '-4deg',
+    top: '37%',
+    right: '7%',
+    width: 220,
+    height: 285,
+    zIndex: 4,
+    hero: true,
+  },
+  {
+    src: img('photo-1503387762-592deb58ef4e', 340),
+    alt: 'Sheets of plywood stacked for production',
+    rotate: '7deg',
+    bottom: '8%',
+    right: '5%',
+    width: 160,
+    height: 190,
+    zIndex: 2,
+  },
+];
+
+const mobilePhotos = [
+  {
+    src: img('photo-1562259949-e8e7689d7828', 260),
+    alt: 'Paint roller and renovation tools',
+    rotate: '-7deg',
+    top: '78px',
+    left: '-18px',
+    width: 118,
+    height: 94,
+  },
+  {
+    src: img('photo-1601058268499-e52658b8bb88', 300),
+    alt: 'Foldable wooden table',
+    rotate: '4deg',
+    top: '82px',
+    right: '-14px',
+    width: 128,
+    height: 104,
+  },
+  {
+    src: img('photo-1503387762-592deb58ef4e', 320),
+    alt: 'Wood production details',
+    rotate: '-3deg',
+    bottom: '92px',
+    left: '50%',
+    width: 148,
+    height: 112,
+    translateX: '-50%',
+  },
+];
 
 export default function HeroSection({ onOpenCart }: HeroSectionProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [isDesktop, setIsDesktop] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      const dx = (e.clientX - cx) / rect.width;
-      const dy = (e.clientY - cy) / rect.height;
-      const photos = containerRef.current.querySelectorAll<HTMLElement>('.photo-item');
-      photos.forEach((el, i) => {
-        const depth = i % 3 === 0 ? 12 : i % 3 === 1 ? 6 : 18;
-        el.style.transform = `translate(${dx * depth}px, ${dy * depth}px) rotate(${el.dataset.rotate})`;
-      });
-    };
-    const container = containerRef.current;
-    container?.addEventListener('mousemove', handleMouseMove);
-    return () => container?.removeEventListener('mousemove', handleMouseMove);
+    const media = window.matchMedia('(min-width: 1280px)');
+    const update = () => setIsDesktop(media.matches);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
   }, []);
 
   return (
     <section
-      ref={containerRef}
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden noise-overlay"
       style={{ background: 'linear-gradient(160deg, #1E1E1E 0%, #2A1A0A 50%, #1E1E1E 100%)' }}>
       
       {/* Atmospheric glow blobs */}
       <div className="absolute inset-0 pointer-events-none">
         <div
-          className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full opacity-15"
-          style={{ background: '#F5A623', filter: 'blur(120px)' }} />
+          className="absolute top-1/4 left-1/4 w-[320px] md:w-[500px] h-[320px] md:h-[500px] rounded-full opacity-10 md:opacity-15"
+          style={{ background: 'radial-gradient(circle, rgba(245,166,35,0.55) 0%, rgba(245,166,35,0.18) 38%, transparent 70%)' }} />
         
         <div
-          className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full opacity-10"
-          style={{ background: '#FF6B35', filter: 'blur(100px)' }} />
+          className="absolute bottom-1/4 right-1/4 w-[260px] md:w-[400px] h-[260px] md:h-[400px] rounded-full opacity-8 md:opacity-10"
+          style={{ background: 'radial-gradient(circle, rgba(255,107,53,0.52) 0%, rgba(255,107,53,0.16) 40%, transparent 72%)' }} />
         
       </div>
 
-      {/* UGC Photo Wall - desktop */}
-      <div className="absolute inset-0 hidden lg:block pointer-events-none select-none">
-        {photos.map((photo, i) =>
-        <div
-          key={i}
-          className={`photo-item photo-pin absolute ${photo.hero ? 'shadow-gold-glow' : 'shadow-card-dark'}`}
-          data-rotate={photo.rotate}
-          style={{
-            top: photo.top,
-            left: photo.left,
-            right: photo.right,
-            width: photo.hero ? 240 : photo.width,
-            zIndex: photo.hero ? 5 : photo.zIndex,
-            transform: `rotate(${photo.rotate}) scale(${photo.scale})`,
-            transition: 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-            border: '4px solid #2A2A2A',
-            borderRadius: '4px',
-            overflow: 'hidden'
-          }}>
-          
-            <AppImage
-            src={photo.src}
-            alt={photo.alt}
-            width={photo.hero ? 240 : photo.width}
-            height={photo.hero ? 320 : 180}
-            className="w-full object-cover"
-            style={{ filter: 'saturate(1.1) contrast(1.05)' } as React.CSSProperties} />
-          
-            {photo.hero &&
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-                <span className="text-xs font-dm-sans text-lager-gold tracking-wider">Собствено производство</span>
-              </div>
-          }
-          </div>
-        )}
-      </div>
+      {isDesktop === true && (
+        <div className="absolute inset-0 pointer-events-none select-none">
+          {desktopPhotos.map((photo, i) =>
+          <div
+            key={i}
+            className={`photo-pin absolute ${photo.hero ? 'shadow-gold-glow' : 'shadow-card-dark'}`}
+            style={{
+              top: photo.top,
+              bottom: photo.bottom,
+              left: photo.left,
+              right: photo.right,
+              width: photo.width,
+              height: photo.height,
+              zIndex: photo.zIndex,
+              transform: `rotate(${photo.rotate})`,
+              border: '4px solid #2A2A2A',
+              borderRadius: '4px',
+              overflow: 'hidden',
+              opacity: photo.hero ? 0.92 : 0.86,
+            }}>
+            
+              <AppImage
+              src={photo.src}
+              alt={photo.alt}
+              width={photo.width}
+              height={photo.height}
+              loading="lazy"
+              decoding="async"
+              className="w-full h-full object-cover"
+              style={{ filter: 'saturate(1.05) contrast(1.03)' } as React.CSSProperties} />
+            
+              {photo.hero &&
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
+                  <span className="text-xs font-dm-sans text-lager-gold tracking-wider">Собствено производство</span>
+                </div>
+            }
+            </div>
+          )}
+        </div>
+      )}
 
-      {/* Mobile photo strip */}
-      <div className="lg:hidden absolute top-0 left-0 right-0 h-48 overflow-hidden flex gap-2 px-4 pt-20 opacity-40">
-        {photos.slice(0, 4).map((photo, i) =>
-        <div key={i} className="flex-shrink-0 w-28 h-36 overflow-hidden rounded border-2 border-smoke"
-        style={{ transform: `rotate(${photo.rotate})` }}>
-            <AppImage src={photo.src} alt={photo.alt} width={112} height={144} className="w-full h-full object-cover" />
-          </div>
-        )}
-      </div>
+      {isDesktop === false && (
+        <div className="absolute inset-0 pointer-events-none select-none overflow-hidden opacity-55">
+          {mobilePhotos.map((photo, i) => (
+            <div
+              key={i}
+              className="photo-pin absolute shadow-card-dark"
+              style={{
+                top: photo.top,
+                bottom: photo.bottom,
+                left: photo.left,
+                right: photo.right,
+                width: photo.width,
+                height: photo.height,
+                transform: `translateX(${photo.translateX ?? '0'}) rotate(${photo.rotate})`,
+                border: '3px solid #2A2A2A',
+                borderRadius: '4px',
+                overflow: 'hidden',
+              }}
+            >
+              <AppImage
+                src={photo.src}
+                alt={photo.alt}
+                width={photo.width}
+                height={photo.height}
+                loading={i === 0 ? 'eager' : 'lazy'}
+                decoding="async"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Hero content */}
-      <div className="relative z-20 text-center px-5 max-w-5xl mx-auto mt-28 lg:mt-10">
+      <div className="relative z-20 text-center px-5 max-w-5xl mx-auto mt-24 xl:mt-10">
         {/* Main headline */}
         <h1 className="font-fraunces font-black text-hero text-ice-white leading-none mb-4 animate-in delay-100">
           Сгъваеми маси.
